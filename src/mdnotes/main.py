@@ -1,6 +1,6 @@
 import os
 from fastmcp import FastMCP
-from config import settings
+from .config import settings
 
 mcp = FastMCP(name="MarkdownNotes")
 

@@ -9,7 +9,7 @@ dependencies = [
 ]
 
 [project.scripts]
-mdnotes = "main:main"
+mdnotes = "mdnotes.main:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
