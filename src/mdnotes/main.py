@@ -68,9 +68,10 @@ def read_note(file_path: str) -> dict:
         return {"status": "error", "error": str(e)}
 
 @mcp.tool
-def search_notes(keyword: str, recursive: bool = False) -> dict:
+def search_notes(keyword: str, recursive: bool = False, before_context: int = 2, after_context: int = 2) -> dict:
     """
-    Searches for a keyword in all markdown files in the notes directory.
+    Searches for a keyword in all markdown files in the notes directory and returns
+    matching lines with surrounding context.
     """
     results = []
     try:
@@ -92,12 +93,16 @@ def search_notes(keyword: str, recursive: bool = False) -> dict:
                     if os.path.isdir(full_path):
                         continue
                     with open(full_path, "r", encoding="utf-8") as f:
-                        for i, line in enumerate(f.read().splitlines()):
+                        lines = f.readlines()
+                        for i, line in enumerate(lines):
                             if keyword.lower() in line.lower():
+                                start_line = max(0, i - before_context)
+                                end_line = min(len(lines), i + after_context + 1)
+                                context_lines = [l.strip() for l in lines[start_line:end_line]]
                                 results.append({
                                     "file_path": file_path,
                                     "line_number": i + 1,
-                                    "snippet": line.strip()
+                                    "snippet": context_lines
                                 })
                 except (PermissionError, FileNotFoundError):
                     # Ignore files that can't be read
