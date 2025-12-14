@@ -6,6 +6,7 @@ This file outlines proposed improvements to enhance the `mdnotes` MCP server as 
 
 ### Phase 1: Core Functionality Enhancements
 - [ ] **Enhanced Search:**
+    - [x] Improved `search_notes` implementation for direct file access.
     - [ ] Add contextual lines to `search_notes` results.
     - [ ] Implement a new `search_in_note(file_path, keyword)` tool.
 - [ ] **Improved Navigation:**
