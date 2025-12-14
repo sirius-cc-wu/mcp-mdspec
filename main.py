@@ -30,5 +30,18 @@ def read_note(file_path: str) -> str:
     with open(target_file_path, "r") as f:
         return f.read()
 
+@mcp.tool
+def search_notes(keyword: str) -> list[str]:
+    """
+    Searches for a keyword in all markdown files in the notes directory.
+    """
+    results = []
+    for file_path in list_notes():
+        if file_path.endswith(".md"):
+            content = read_note(file_path)
+            if keyword.lower() in content.lower():
+                results.append(file_path)
+    return results
+
 if __name__ == "__main__":
     mcp.run(transport="http", port=8080)
