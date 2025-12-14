@@ -72,22 +72,39 @@ def search_notes(keyword: str, recursive: bool = False) -> dict:
     """
     Searches for a keyword in all markdown files in the notes directory.
     """
-    list_response = list_notes(recursive=recursive)
-    if list_response["status"] == "error":
-        return list_response
-
     results = []
-    for file_path in list_response["data"]:
-        if file_path.endswith(".md"):
-            read_response = read_note(file_path)
-            if read_response["status"] == "success":
-                for i, line in enumerate(read_response["data"].splitlines()):
-                    if keyword.lower() in line.lower():
-                        results.append({
-                            "file_path": file_path,
-                            "line_number": i + 1,
-                            "snippet": line.strip()
-                        })
+    try:
+        base_path = _get_safe_path("")
+        file_list = []
+        if recursive:
+            for root, _, files in os.walk(base_path):
+                for file in files:
+                    full_path = os.path.join(root, file)
+                    relative_path = os.path.relpath(full_path, base_path)
+                    file_list.append(relative_path)
+        else:
+            file_list = os.listdir(base_path)
+
+        for file_path in file_list:
+            if file_path.endswith(".md"):
+                try:
+                    full_path = _get_safe_path(file_path)
+                    if os.path.isdir(full_path):
+                        continue
+                    with open(full_path, "r", encoding="utf-8") as f:
+                        for i, line in enumerate(f.read().splitlines()):
+                            if keyword.lower() in line.lower():
+                                results.append({
+                                    "file_path": file_path,
+                                    "line_number": i + 1,
+                                    "snippet": line.strip()
+                                })
+                except (PermissionError, FileNotFoundError):
+                    # Ignore files that can't be read
+                    continue
+    except (PermissionError, FileNotFoundError) as e:
+        return {"status": "error", "error": str(e)}
+
     return {"status": "success", "data": results}
 
 def main():
