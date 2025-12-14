@@ -90,5 +90,9 @@ def search_notes(keyword: str, recursive: bool = False) -> dict:
                         })
     return {"status": "success", "data": results}
 
-if __name__ == "__main__":
+def main():
+    """Runs the MCP server."""
     mcp.run(transport="http", port=8080)
+
+if __name__ == "__main__":
+    main()

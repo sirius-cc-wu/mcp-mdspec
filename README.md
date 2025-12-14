@@ -13,7 +13,7 @@ The server provides tools to `list_notes`, `read_note`, and `search_notes` from 
 
 1.  **Install project dependencies:**
 
-    This project uses `uv` for dependency management. Running the command below will install all dependencies listed in `pyproject.toml`.
+    This project uses `uv` for dependency management. Running the command below will install all dependencies listed in `pyproject.toml` and create a command-line script to run the server.
 
     ```bash
     uv pip install .
@@ -21,11 +21,11 @@ The server provides tools to `list_notes`, `read_note`, and `search_notes` from 
 
 ## Configuration
 
-The server's behavior can be customized via the `config.py` file or by setting environment variables.
+The server's behavior can be customized by setting environment variables.
 
 - **`NOTES_DIR`**: Specifies the root directory for all note-related operations. If this variable is not set, the server will default to using the "notes" directory. Both the `list_notes` and `read_note` tools will resolve file and directory paths relative to this base path.
 
-You can also modify the `config.py` file to change the default `notes_dir`.
+For advanced configuration, you can modify the `src/config.py` file, but using environment variables is the recommended approach.
 
 ## Running the Server
 
@@ -33,10 +33,10 @@ You can run the server in two modes: `run` for production/consumption and `dev` 
 
 ### Run Mode
 
-This mode is for running the server to be used by the Gemini CLI. The `main.py` script can now be run directly as it contains the server startup logic.
+This mode is for running the server to be used by the Gemini CLI. After installation, you can run the server using the `mdnotes` command.
 
 ```bash
-python main.py
+mdnotes
 ```
 
 You should see output similar to this:
@@ -55,7 +55,7 @@ INFO:     Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
 This mode starts the MCP Inspector, a web-based UI that allows for interactive testing of the tools provided by the MCP server.
 
 ```bash
-fastmcp dev main.py --ui-port="9080" --server-port="5080"
+fastmcp dev src/main.py --ui-port="9080" --server-port="5080"
 ```
 
 You will see output like this, including a URL to access the MCP Inspector:
