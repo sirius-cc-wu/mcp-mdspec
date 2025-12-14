@@ -1,6 +1,8 @@
 # Markdown Notes MCP Server
 
-This project provides a simple MCP (Model Context Protocol) server for managing markdown notes. It's built using the `fastmcp` library.
+This project provides a simple, **read-only** MCP (Model Context Protocol) server for serving local markdown documents to an LLM. It's built using the `fastmcp` library.
+
+The server provides tools to `list_notes`, `read_note`, and `search_notes` from a local directory, but it does not support creating, editing, or deleting files. This makes it a secure way to provide a model with access to a corpus of local documents.
 
 ## Prerequisites
 
@@ -48,7 +50,7 @@ INFO:     Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
 
 ### Dev Mode
 
-This mode starts the MCP Inspector, a web application that allows interactive testing of the tools provided by the MCP server.
+This mode starts the MCP Inspector, a web-based UI that allows for interactive testing of the tools provided by the MCP server.
 
 ```bash
 fastmcp dev main.py --ui-port="9080" --server-port="5080"

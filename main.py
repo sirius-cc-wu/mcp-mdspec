@@ -26,13 +26,13 @@ def _get_safe_path(user_path: str) -> str:
         raise PermissionError("Error: Access to paths outside of the notes directory is not allowed.")
 
     if not os.path.exists(target_path):
-        raise FileNotFoundError(f"Error: Path '{user_path}' not found.")
+        raise FileNotFoundError(f"Error: Path \'{user_path}\' not found.")
 
     return target_path
 
 
 @mcp.tool
-def list_notes(path: str = "") -> dict:
+def list_notes(path: str = "", recursive: bool = False) -> dict:
     """
     Lists notes in a given directory relative to the base path.
     The base path can be set using the 'MD_NOTES_PATH' environment variable,
@@ -40,7 +40,16 @@ def list_notes(path: str = "") -> dict:
     """
     try:
         safe_path = _get_safe_path(path)
-        return {"status": "success", "data": os.listdir(safe_path)}
+        if recursive:
+            file_list = []
+            for root, _, files in os.walk(safe_path):
+                for file in files:
+                    full_path = os.path.join(root, file)
+                    relative_path = os.path.relpath(full_path, safe_path)
+                    file_list.append(relative_path)
+            return {"status": "success", "data": file_list}
+        else:
+            return {"status": "success", "data": os.listdir(safe_path)}
     except (PermissionError, FileNotFoundError) as e:
         return {"status": "error", "error": str(e)}
 
@@ -55,18 +64,18 @@ def read_note(file_path: str) -> dict:
     try:
         safe_path = _get_safe_path(file_path)
         if os.path.isdir(safe_path):
-            return {"status": "error", "error": f"Error: '{file_path}' is a directory, not a file."}
+            return {"status": "error", "error": f"Error: \'{file_path}\' is a directory, not a file."}
         with open(safe_path, "r") as f:
             return {"status": "success", "data": f.read()}
     except (PermissionError, FileNotFoundError) as e:
         return {"status": "error", "error": str(e)}
 
 @mcp.tool
-def search_notes(keyword: str) -> dict:
+def search_notes(keyword: str, recursive: bool = False) -> dict:
     """
     Searches for a keyword in all markdown files in the notes directory.
     """
-    list_response = list_notes()
+    list_response = list_notes(recursive=recursive)
     if list_response["status"] == "error":
         return list_response
 
@@ -75,8 +84,13 @@ def search_notes(keyword: str) -> dict:
         if file_path.endswith(".md"):
             read_response = read_note(file_path)
             if read_response["status"] == "success":
-                if keyword.lower() in read_response["data"].lower():
-                    results.append(file_path)
+                for i, line in enumerate(read_response["data"].splitlines()):
+                    if keyword.lower() in line.lower():
+                        results.append({
+                            "file_path": file_path,
+                            "line_number": i + 1,
+                            "snippet": line.strip()
+                        })
     return {"status": "success", "data": results}
 
 if __name__ == "__main__":
