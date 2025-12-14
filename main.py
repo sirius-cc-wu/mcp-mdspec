@@ -32,7 +32,7 @@ def _get_safe_path(user_path: str) -> str:
 
 
 @mcp.tool
-def list_notes(path: str = "") -> list[str] | str:
+def list_notes(path: str = "") -> dict:
     """
     Lists notes in a given directory relative to the base path.
     The base path can be set using the 'MD_NOTES_PATH' environment variable,
@@ -40,13 +40,13 @@ def list_notes(path: str = "") -> list[str] | str:
     """
     try:
         safe_path = _get_safe_path(path)
-        return os.listdir(safe_path)
+        return {"status": "success", "data": os.listdir(safe_path)}
     except (PermissionError, FileNotFoundError) as e:
-        return str(e)
+        return {"status": "error", "error": str(e)}
 
 
 @mcp.tool
-def read_note(file_path: str) -> str:
+def read_note(file_path: str) -> dict:
     """
     Reads the content of a note file relative to the base path.
     The base path can be set using the 'MD_NOTES_PATH' environment variable,
@@ -55,29 +55,29 @@ def read_note(file_path: str) -> str:
     try:
         safe_path = _get_safe_path(file_path)
         if os.path.isdir(safe_path):
-            return f"Error: '{file_path}' is a directory, not a file."
+            return {"status": "error", "error": f"Error: '{file_path}' is a directory, not a file."}
         with open(safe_path, "r") as f:
-            return f.read()
+            return {"status": "success", "data": f.read()}
     except (PermissionError, FileNotFoundError) as e:
-        return str(e)
+        return {"status": "error", "error": str(e)}
 
 @mcp.tool
-def search_notes(keyword: str) -> list[str] | str:
+def search_notes(keyword: str) -> dict:
     """
     Searches for a keyword in all markdown files in the notes directory.
     """
-    notes = list_notes()
-    if isinstance(notes, str):
-        return notes  # Return error from list_notes
+    list_response = list_notes()
+    if list_response["status"] == "error":
+        return list_response
 
     results = []
-    for file_path in notes:
+    for file_path in list_response["data"]:
         if file_path.endswith(".md"):
-            content = read_note(file_path)
-            if not content.startswith("Error:"):
-                if keyword.lower() in content.lower():
+            read_response = read_note(file_path)
+            if read_response["status"] == "success":
+                if keyword.lower() in read_response["data"].lower():
                     results.append(file_path)
-    return results
+    return {"status": "success", "data": results}
 
 if __name__ == "__main__":
     mcp.run(transport="http", port=8080)
