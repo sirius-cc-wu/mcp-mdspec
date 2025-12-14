@@ -6,24 +6,26 @@ The server provides tools to `list_notes`, `read_note`, and `search_notes` from 
 
 ## Prerequisites
 
-- Python 3.10 or newer
+- Python 3.13 or newer
 - `uv` package manager
 
 ## Installation
 
-1.  **Install `fastmcp` and project dependencies:**
+1.  **Install project dependencies:**
 
-    This project uses `uv` for dependency management. Running the command below will install `fastmcp` and any other dependencies listed in `pyproject.toml`.
+    This project uses `uv` for dependency management. Running the command below will install all dependencies listed in `pyproject.toml`.
 
     ```bash
-    uv pip install fastmcp
+    uv pip install .
     ```
 
 ## Configuration
 
-The server's behavior can be customized via the following environment variable:
+The server's behavior can be customized via the `config.py` file or by setting environment variables.
 
-- **`MD_NOTES_PATH`**: Specifies the root directory for all note-related operations. If this variable is not set, the server will default to using the current working directory. Both the `list_notes` and `read_note` tools will resolve file and directory paths relative to this base path.
+- **`NOTES_DIR`**: Specifies the root directory for all note-related operations. If this variable is not set, the server will default to using the "notes" directory. Both the `list_notes` and `read_note` tools will resolve file and directory paths relative to this base path.
+
+You can also modify the `config.py` file to change the default `notes_dir`.
 
 ## Running the Server
 

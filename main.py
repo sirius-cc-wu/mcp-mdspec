@@ -1,11 +1,8 @@
 import os
 from fastmcp import FastMCP
+from config import settings
 
 mcp = FastMCP(name="MarkdownNotes")
-
-def get_base_path():
-    """Retrieves the base path from an environment variable or defaults to current directory."""
-    return os.getenv("MD_NOTES_PATH", ".")
 
 def _get_safe_path(user_path: str) -> str:
     """
@@ -15,7 +12,7 @@ def _get_safe_path(user_path: str) -> str:
         PermissionError: If the path is outside the base path.
         FileNotFoundError: If the path doesn't exist.
     """
-    base_path = os.path.realpath(get_base_path())
+    base_path = os.path.realpath(settings.notes_dir)
     # Prevent user_path from being an absolute path
     if os.path.isabs(user_path):
         raise PermissionError("Error: Absolute paths are not allowed.")
@@ -35,7 +32,7 @@ def _get_safe_path(user_path: str) -> str:
 def list_notes(path: str = "", recursive: bool = False) -> dict:
     """
     Lists notes in a given directory relative to the base path.
-    The base path can be set using the 'MD_NOTES_PATH' environment variable,
+    The base path can be set using the 'NOTES_DIR' environment variable,
     otherwise it defaults to the current working directory.
     """
     try:
@@ -58,7 +55,7 @@ def list_notes(path: str = "", recursive: bool = False) -> dict:
 def read_note(file_path: str) -> dict:
     """
     Reads the content of a note file relative to the base path.
-    The base path can be set using the 'MD_NOTES_PATH' environment variable,
+    The base path can be set using the 'NOTES_DIR' environment variable,
     otherwise it defaults to the current working directory.
     """
     try:
