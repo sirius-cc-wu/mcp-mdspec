@@ -8,7 +8,7 @@ This file outlines proposed improvements to enhance the `mdnotes` MCP server as 
 - [ ] **Enhanced Search:**
     - [x] Improved `search_notes` implementation for direct file access.
     - [x] Add contextual lines to `search_notes` results.
-    - [ ] Implement a new `search_in_note(file_path, keyword)` tool.
+    - [x] Implement a new `search_in_note(file_path, keyword)` tool.
 - [ ] **Improved Navigation:**
     - [ ] Create a `get_table_of_contents(file_path)` tool to generate a ToC from markdown headings.
 - [ ] **Better Metadata:**

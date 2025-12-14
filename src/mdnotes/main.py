@@ -112,6 +112,34 @@ def search_notes(keyword: str, recursive: bool = False, before_context: int = 2,
 
     return {"status": "success", "data": results}
 
+@mcp.tool
+def search_in_note(file_path: str, keyword: str, before_context: int = 2, after_context: int = 2) -> dict:
+    """
+    Searches for a keyword within a specific markdown file and returns
+    matching lines with surrounding context.
+    """
+    results = []
+    try:
+        full_path = _get_safe_path(file_path)
+        if os.path.isdir(full_path):
+            return {"status": "error", "error": f"Error: '{file_path}' is a directory, not a file."}
+        
+        with open(full_path, "r", encoding="utf-8") as f:
+            lines = f.readlines()
+            for i, line in enumerate(lines):
+                if keyword.lower() in line.lower():
+                    start_line = max(0, i - before_context)
+                    end_line = min(len(lines), i + after_context + 1)
+                    context_lines = [l.strip() for l in lines[start_line:end_line]]
+                    results.append({
+                        "file_path": file_path,
+                        "line_number": i + 1,
+                        "snippet": context_lines
+                    })
+        return {"status": "success", "data": results}
+    except (PermissionError, FileNotFoundError) as e:
+        return {"status": "error", "error": str(e)}
+
 def main():
     """Runs the MCP server."""
     mcp.run(transport="http", port=8080)
