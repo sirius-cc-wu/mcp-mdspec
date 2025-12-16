@@ -35,7 +35,7 @@ def _get_safe_path(user_path: str) -> str:
 
 
 @mcp.tool
-def list_notes(path: str = "", recursive: bool = False) -> dict:
+def list_notes(path: str = "", recursive: bool = False, hierarchical: bool = False) -> dict:
     """
     Lists notes in a given directory relative to the base path, including their last modified timestamp.
     The base path can be set using the 'NOTES_DIR' environment variable,
@@ -50,6 +50,27 @@ def list_notes(path: str = "", recursive: bool = False) -> dict:
                 last_modified_timestamp).isoformat()
             relative_path = os.path.relpath(full_path, base_for_relpath)
             return {"name": relative_path, "last_modified": last_modified}
+
+        def get_tree(dir_path, base_for_relpath):
+            tree = []
+            for item in os.listdir(dir_path):
+                full_path = os.path.join(dir_path, item)
+                if os.path.isdir(full_path):
+                    tree.append({
+                        "name": os.path.relpath(full_path, base_for_relpath),
+                        "type": "directory",
+                        "children": get_tree(full_path, base_for_relpath)
+                    })
+                else:
+                    tree.append({
+                        "name": os.path.relpath(full_path, base_for_relpath),
+                        "type": "file",
+                        "last_modified": datetime.fromtimestamp(os.path.getmtime(full_path)).isoformat()
+                    })
+            return tree
+
+        if hierarchical:
+            return {"status": "success", "data": get_tree(safe_path, safe_path)}
 
         if recursive:
             file_list = []

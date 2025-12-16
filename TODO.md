@@ -21,7 +21,7 @@ This file outlines proposed improvements to enhance the `mdnotes` MCP server as 
     - [x] Implement a mechanism to associate tags with notes (e.g., in a separate metadata file or within the note frontmatter).
     - [x] Create a `search_by_tag(tag)` tool.
 - [ ] **Hierarchical Listing:**
-    - [ ] Update `list_notes` to optionally return a hierarchical (tree-like) view of the notes directory.
+    - [x] Update `list_notes` to optionally return a hierarchical (tree-like) view of the notes directory.
 
 ### Phase 3: Usability & Configuration
 - [ ] **Configuration:**
