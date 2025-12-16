@@ -1,3 +1,4 @@
+import frontmatter
 import os
 from datetime import datetime
 from fastmcp import FastMCP
@@ -6,6 +7,7 @@ from .vector_search import VectorSearch
 
 mcp = FastMCP(name="MarkdownNotes")
 vector_search = VectorSearch()
+
 
 def _get_safe_path(user_path: str) -> str:
     """
@@ -23,7 +25,8 @@ def _get_safe_path(user_path: str) -> str:
     target_path = os.path.realpath(os.path.join(base_path, user_path))
 
     if not target_path.startswith(base_path):
-        raise PermissionError("Error: Access to paths outside of the notes directory is not allowed.")
+        raise PermissionError(
+            "Error: Access to paths outside of the notes directory is not allowed.")
 
     if not os.path.exists(target_path):
         raise FileNotFoundError(f"Error: Path '{user_path}' not found.")
@@ -40,10 +43,11 @@ def list_notes(path: str = "", recursive: bool = False) -> dict:
     """
     try:
         safe_path = _get_safe_path(path)
-        
+
         def get_file_data(full_path, base_for_relpath):
             last_modified_timestamp = os.path.getmtime(full_path)
-            last_modified = datetime.fromtimestamp(last_modified_timestamp).isoformat()
+            last_modified = datetime.fromtimestamp(
+                last_modified_timestamp).isoformat()
             relative_path = os.path.relpath(full_path, base_for_relpath)
             return {"name": relative_path, "last_modified": last_modified}
 
@@ -58,9 +62,10 @@ def list_notes(path: str = "", recursive: bool = False) -> dict:
             detailed_file_list = []
             for item in os.listdir(safe_path):
                 full_path = os.path.join(safe_path, item)
-                detailed_file_list.append(get_file_data(full_path, safe_path))
+                detailed_file_list.append(
+                    get_file_data(full_path, safe_path))
             return {"status": "success", "data": detailed_file_list}
-            
+
     except (PermissionError, FileNotFoundError) as e:
         return {"status": "error", "error": str(e)}
 
@@ -68,7 +73,7 @@ def list_notes(path: str = "", recursive: bool = False) -> dict:
 @mcp.tool
 def read_note(file_path: str) -> dict:
     """
-    Reads the content of a note file relative to the base path.
+    Reads the content and metadata of a note file relative to the base path.
     The base path can be set using the 'NOTES_DIR' environment variable,
     otherwise it defaults to the current working directory.
     """
@@ -77,9 +82,11 @@ def read_note(file_path: str) -> dict:
         if os.path.isdir(safe_path):
             return {"status": "error", "error": f"Error: '{file_path}' is a directory, not a file."}
         with open(safe_path, "r") as f:
-            return {"status": "success", "data": f.read()}
+            note = frontmatter.load(f)
+            return {"status": "success", "data": {"content": note.content, "metadata": note.metadata}}
     except (PermissionError, FileNotFoundError) as e:
         return {"status": "error", "error": str(e)}
+
 
 @mcp.tool
 def search_notes(keyword: str, recursive: bool = False, before_context: int = 2, after_context: int = 2) -> dict:
@@ -111,8 +118,10 @@ def search_notes(keyword: str, recursive: bool = False, before_context: int = 2,
                         for i, line in enumerate(lines):
                             if keyword.lower() in line.lower():
                                 start_line = max(0, i - before_context)
-                                end_line = min(len(lines), i + after_context + 1)
-                                context_lines = [l.strip() for l in lines[start_line:end_line]]
+                                end_line = min(
+                                    len(lines), i + after_context + 1)
+                                context_lines = [l.strip()
+                                                 for l in lines[start_line:end_line]]
                                 results.append({
                                     "file_path": file_path,
                                     "line_number": i + 1,
@@ -126,6 +135,7 @@ def search_notes(keyword: str, recursive: bool = False, before_context: int = 2,
 
     return {"status": "success", "data": results}
 
+
 @mcp.tool
 def search_in_note(file_path: str, keyword: str, before_context: int = 2, after_context: int = 2) -> dict:
     """
@@ -137,14 +147,15 @@ def search_in_note(file_path: str, keyword: str, before_context: int = 2, after_
         full_path = _get_safe_path(file_path)
         if os.path.isdir(full_path):
             return {"status": "error", "error": f"Error: '{file_path}' is a directory, not a file."}
-        
+
         with open(full_path, "r", encoding="utf-8") as f:
             lines = f.readlines()
             for i, line in enumerate(lines):
                 if keyword.lower() in line.lower():
                     start_line = max(0, i - before_context)
                     end_line = min(len(lines), i + after_context + 1)
-                    context_lines = [l.strip() for l in lines[start_line:end_line]]
+                    context_lines = [l.strip()
+                                     for l in lines[start_line:end_line]]
                     results.append({
                         "file_path": file_path,
                         "line_number": i + 1,
@@ -153,6 +164,7 @@ def search_in_note(file_path: str, keyword: str, before_context: int = 2, after_
         return {"status": "success", "data": results}
     except (PermissionError, FileNotFoundError) as e:
         return {"status": "error", "error": str(e)}
+
 
 @mcp.tool
 def get_table_of_contents(file_path: str) -> dict:
@@ -164,7 +176,7 @@ def get_table_of_contents(file_path: str) -> dict:
         full_path = _get_safe_path(file_path)
         if os.path.isdir(full_path):
             return {"status": "error", "error": f"Error: '{file_path}' is a directory, not a file."}
-        
+
         with open(full_path, "r", encoding="utf-8") as f:
             for line in f:
                 if line.strip().startswith("#"):
@@ -213,9 +225,35 @@ def semantic_search(query: str, n_results: int = 5) -> dict:
         return {"status": "error", "error": str(e)}
 
 
+@mcp.tool
+def search_by_tag(tag: str) -> dict:
+    """
+    Searches for notes with a specific tag in their frontmatter.
+    """
+    results = []
+    try:
+        base_path = _get_safe_path("")
+        for root, _, files in os.walk(base_path):
+            for file in files:
+                if file.endswith(".md"):
+                    full_path = os.path.join(root, file)
+                    relative_path = os.path.relpath(full_path, base_path)
+                    try:
+                        with open(full_path, "r", encoding="utf-8") as f:
+                            note = frontmatter.load(f)
+                            if "tags" in note.metadata and tag in note.metadata["tags"]:
+                                results.append(relative_path)
+                    except Exception:
+                        continue
+        return {"status": "success", "data": results}
+    except (PermissionError, FileNotFoundError) as e:
+        return {"status": "error", "error": str(e)}
+
+
 def main():
     """Runs the MCP server."""
     mcp.run(transport="http", port=8080)
+
 
 if __name__ == "__main__":
     main()
