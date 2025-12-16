@@ -212,3 +212,39 @@ Searches for notes with a specific tag in their frontmatter.
 ```
 /mcp search_by_tag tag="python"
 ```
+
+## Suggested Prompts for Developers
+
+Here are some suggested prompts to help developers effectively use the `mdnotes` MCP server through the Gemini CLI or other coding agents:
+
+### General Information & Discovery
+
+*   "List all notes in the 'project_docs' directory, including their last modified times."
+*   "Show me a hierarchical view of all notes in the codebase."
+*   "What are the main topics discussed in the 'architecture_overview.md' file?"
+*   "Summarize the content of the file 'api_design.md'."
+
+### Targeted Search & Retrieval
+
+*   "Find all notes that mention 'authentication' or 'authorization'."
+*   "Search for usage of 'ChromaDB' across all documentation, and show me the surrounding context."
+*   "In the 'troubleshooting.md' file, find all mentions of 'error code 500' and show me the lines around it."
+*   "What are the notes tagged with 'feature-x'?"
+*   "Which notes are semantically similar to 'how to integrate with external services'?"
+
+### Code Understanding & Refactoring
+
+*   "I'm looking for documentation related to our new payment gateway. Can you find relevant notes?"
+*   "I need to understand how user roles are managed. What documentation exists for this?"
+*   "Find all notes that discuss 'performance optimization' and list their titles."
+
+### Onboarding & New Features
+
+*   "Give me an overview of the 'user management' module by listing relevant documentation."
+*   "What are the best practices for writing new API endpoints? Show me relevant notes."
+*   "Find documentation on the new 'notification service' feature."
+
+**Tips for Effective Use:**
+
+*   **Consistent Tagging:** Encourage developers to use consistent and meaningful tags in their notes (e.g., in YAML frontmatter) to maximize the effectiveness of `search_by_tag`.
+*   **Keep Index Up-to-Date:** For semantic search to provide the most relevant results, ensure that the `index_notes` tool is run regularly after changes to the note corpus.
