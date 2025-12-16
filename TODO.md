@@ -27,4 +27,4 @@ This file outlines proposed improvements to enhance the `mdnotes` MCP server as 
 - [ ] **Configuration:**
     - [x] Improve configuration management to be more explicit and well-documented (e.g., detailing the use of `.env` files for `NOTES_DIR`).
 - [ ] **Documentation:**
-    - [ ] Enhance the `README.md` with detailed usage examples for all tools.
+    - [x] Enhance the `README.md` with detailed usage examples for all tools.

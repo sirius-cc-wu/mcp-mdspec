@@ -81,3 +81,134 @@ gemini mcp add --transport http mdnotes http://127.0.0.1:8080/mcp
 ```
 
 After adding the server, you can use the `/mcp` command in the Gemini CLI to see the available tools.
+
+## Tool Reference
+
+### `list_notes(path: str = "", recursive: bool = False, hierarchical: bool = False) -> dict`
+
+Lists notes in a given directory.
+
+**Parameters:**
+
+*   `path` (optional): The path to a directory relative to `NOTES_DIR`. Defaults to the root of `NOTES_DIR`.
+*   `recursive` (optional): If `True`, lists notes in all subdirectories. Defaults to `False`.
+*   `hierarchical` (optional): If `True`, returns a tree-like structure of the notes directory. Defaults to `False`.
+
+**Example:**
+
+```
+/mcp list_notes
+```
+
+**Example (recursive):**
+
+```
+/mcp list_notes recursive=True
+```
+
+**Example (hierarchical):**
+
+```
+/mcp list_notes hierarchical=True
+```
+
+### `read_note(file_path: str) -> dict`
+
+Reads the content and metadata of a note.
+
+**Parameters:**
+
+*   `file_path`: The path to a note file relative to `NOTES_DIR`.
+
+**Example:**
+
+```
+/mcp read_note file_path="path/to/my/note.md"
+```
+
+### `search_notes(keyword: str, recursive: bool = False, before_context: int = 2, after_context: int = 2) -> dict`
+
+Searches for a keyword in all notes.
+
+**Parameters:**
+
+*   `keyword`: The keyword to search for.
+*   `recursive` (optional): If `True`, searches in all subdirectories. Defaults to `False`.
+*   `before_context` (optional): The number of lines to include before the matching line. Defaults to 2.
+*   `after_context` (optional): The number of lines to include after the matching line. Defaults to 2.
+
+**Example:**
+
+```
+/mcp search_notes keyword="python"
+```
+
+### `search_in_note(file_path: str, keyword: str, before_context: int = 2, after_context: int = 2) -> dict`
+
+Searches for a keyword in a specific note.
+
+**Parameters:**
+
+*   `file_path`: The path to a note file relative to `NOTES_DIR`.
+*   `keyword`: The keyword to search for.
+*   `before_context` (optional): The number of lines to include before the matching line. Defaults to 2.
+*   `after_context` (optional): The number of lines to include after the matching line. Defaults to 2.
+
+**Example:**
+
+```
+/mcp search_in_note file_path="path/to/my/note.md" keyword="python"
+```
+
+### `get_table_of_contents(file_path: str) -> dict`
+
+Generates a table of contents from the markdown headings in a file.
+
+**Parameters:**
+
+*   `file_path`: The path to a note file relative to `NOTES_DIR`.
+
+**Example:**
+
+```
+/mcp get_table_of_contents file_path="path/to/my/note.md"
+```
+
+### `index_notes() -> dict`
+
+Indexes all notes for semantic search.
+
+**Example:**
+
+```
+/mcp index_notes
+```
+
+### `semantic_search(query: str, n_results: int = 5) -> dict`
+
+Performs a semantic search over the indexed notes.
+
+**Parameters:**
+
+*   `query`: The search query.
+*   `n_results` (optional): The number of results to return. Defaults to 5.
+
+**Example:**
+
+```
+/mcp semantic_search query="how to use python"
+```
+
+### `search_by_tag(tag: str) -> dict`
+
+Searches for notes with a specific tag in their frontmatter.
+
+**Parameters:**
+
+*   `tag`: The tag to search for.
+
+**Example:**
+
+```
+/mcp search_by_tag tag="python"
+```
