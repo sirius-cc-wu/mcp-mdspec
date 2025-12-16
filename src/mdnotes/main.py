@@ -2,8 +2,10 @@ import os
 from datetime import datetime
 from fastmcp import FastMCP
 from .config import settings
+from .vector_search import VectorSearch
 
 mcp = FastMCP(name="MarkdownNotes")
+vector_search = VectorSearch()
 
 def _get_safe_path(user_path: str) -> str:
     """
@@ -24,7 +26,7 @@ def _get_safe_path(user_path: str) -> str:
         raise PermissionError("Error: Access to paths outside of the notes directory is not allowed.")
 
     if not os.path.exists(target_path):
-        raise FileNotFoundError(f"Error: Path \'{user_path}\' not found.")
+        raise FileNotFoundError(f"Error: Path '{user_path}' not found.")
 
     return target_path
 
@@ -73,7 +75,7 @@ def read_note(file_path: str) -> dict:
     try:
         safe_path = _get_safe_path(file_path)
         if os.path.isdir(safe_path):
-            return {"status": "error", "error": f"Error: \'{file_path}\' is a directory, not a file."}
+            return {"status": "error", "error": f"Error: '{file_path}' is a directory, not a file."}
         with open(safe_path, "r") as f:
             return {"status": "success", "data": f.read()}
     except (PermissionError, FileNotFoundError) as e:
@@ -173,6 +175,43 @@ def get_table_of_contents(file_path: str) -> dict:
         return {"status": "success", "data": toc}
     except (PermissionError, FileNotFoundError) as e:
         return {"status": "error", "error": str(e)}
+
+
+@mcp.tool
+def index_notes() -> dict:
+    """
+    Indexes all notes for semantic search.
+    This process can take a while depending on the number of notes.
+    """
+    try:
+        base_path = _get_safe_path("")
+        notes_to_index = []
+        for root, _, files in os.walk(base_path):
+            for file in files:
+                if file.endswith(".md"):
+                    full_path = os.path.join(root, file)
+                    relative_path = os.path.relpath(full_path, base_path)
+                    with open(full_path, "r", encoding="utf-8") as f:
+                        content = f.read()
+                    notes_to_index.append(
+                        {"path": relative_path, "content": content})
+        vector_search.index_notes(notes_to_index)
+        return {"status": "success", "message": "Notes indexed successfully."}
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
+
+
+@mcp.tool
+def semantic_search(query: str, n_results: int = 5) -> dict:
+    """
+    Performs a semantic search over the indexed notes.
+    """
+    try:
+        results = vector_search.search(query, n_results)
+        return {"status": "success", "data": results}
+    except Exception as e:
+        return {"status": "error", "error": str(e)}
+
 
 def main():
     """Runs the MCP server."""

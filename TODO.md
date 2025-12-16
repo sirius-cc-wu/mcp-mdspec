@@ -16,7 +16,7 @@ This file outlines proposed improvements to enhance the `mdnotes` MCP server as 
 
 ### Phase 2: Advanced Features
 - [ ] **Semantic Search:**
-    - [ ] Implement semantic search using a vector database (e.g., ChromaDB).
+    - [x] Implement semantic search using a vector database (e.g., ChromaDB).
 - [ ] **Tagging System:**
     - [ ] Implement a mechanism to associate tags with notes (e.g., in a separate metadata file or within the note frontmatter).
     - [ ] Create a `search_by_tag(tag)` tool.
