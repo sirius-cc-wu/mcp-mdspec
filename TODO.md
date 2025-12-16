@@ -25,6 +25,6 @@ This file outlines proposed improvements to enhance the `mdnotes` MCP server as 
 
 ### Phase 3: Usability & Configuration
 - [ ] **Configuration:**
-    - [ ] Improve configuration management to be more explicit and well-documented (e.g., detailing the use of `.env` files for `NOTES_DIR`).
+    - [x] Improve configuration management to be more explicit and well-documented (e.g., detailing the use of `.env` files for `NOTES_DIR`).
 - [ ] **Documentation:**
     - [ ] Enhance the `README.md` with detailed usage examples for all tools.
