@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 from fastmcp import FastMCP
 from .config import settings
 
@@ -31,22 +32,33 @@ def _get_safe_path(user_path: str) -> str:
 @mcp.tool
 def list_notes(path: str = "", recursive: bool = False) -> dict:
     """
-    Lists notes in a given directory relative to the base path.
+    Lists notes in a given directory relative to the base path, including their last modified timestamp.
     The base path can be set using the 'NOTES_DIR' environment variable,
     otherwise it defaults to the current working directory.
     """
     try:
         safe_path = _get_safe_path(path)
+        
+        def get_file_data(full_path, base_for_relpath):
+            last_modified_timestamp = os.path.getmtime(full_path)
+            last_modified = datetime.fromtimestamp(last_modified_timestamp).isoformat()
+            relative_path = os.path.relpath(full_path, base_for_relpath)
+            return {"name": relative_path, "last_modified": last_modified}
+
         if recursive:
             file_list = []
             for root, _, files in os.walk(safe_path):
                 for file in files:
                     full_path = os.path.join(root, file)
-                    relative_path = os.path.relpath(full_path, safe_path)
-                    file_list.append(relative_path)
+                    file_list.append(get_file_data(full_path, safe_path))
             return {"status": "success", "data": file_list}
         else:
-            return {"status": "success", "data": os.listdir(safe_path)}
+            detailed_file_list = []
+            for item in os.listdir(safe_path):
+                full_path = os.path.join(safe_path, item)
+                detailed_file_list.append(get_file_data(full_path, safe_path))
+            return {"status": "success", "data": detailed_file_list}
+            
     except (PermissionError, FileNotFoundError) as e:
         return {"status": "error", "error": str(e)}
 
@@ -137,6 +149,28 @@ def search_in_note(file_path: str, keyword: str, before_context: int = 2, after_
                         "snippet": context_lines
                     })
         return {"status": "success", "data": results}
+    except (PermissionError, FileNotFoundError) as e:
+        return {"status": "error", "error": str(e)}
+
+@mcp.tool
+def get_table_of_contents(file_path: str) -> dict:
+    """
+    Generates a table of contents from the markdown headings in a file.
+    """
+    toc = []
+    try:
+        full_path = _get_safe_path(file_path)
+        if os.path.isdir(full_path):
+            return {"status": "error", "error": f"Error: '{file_path}' is a directory, not a file."}
+        
+        with open(full_path, "r", encoding="utf-8") as f:
+            for line in f:
+                if line.strip().startswith("#"):
+                    parts = line.strip().split(" ", 1)
+                    level = len(parts[0])
+                    title = parts[1].strip() if len(parts) > 1 else ""
+                    toc.append({"level": level, "title": title})
+        return {"status": "success", "data": toc}
     except (PermissionError, FileNotFoundError) as e:
         return {"status": "error", "error": str(e)}
 

@@ -10,9 +10,9 @@ This file outlines proposed improvements to enhance the `mdnotes` MCP server as 
     - [x] Add contextual lines to `search_notes` results.
     - [x] Implement a new `search_in_note(file_path, keyword)` tool.
 - [ ] **Improved Navigation:**
-    - [ ] Create a `get_table_of_contents(file_path)` tool to generate a ToC from markdown headings.
+    - [x] Create a `get_table_of_contents(file_path)` tool to generate a ToC from markdown headings.
 - [ ] **Better Metadata:**
-    - [ ] Extend `list_notes` to include the last modified timestamp for each note.
+    - [x] Extend `list_notes` to include the last modified timestamp for each note.
 
 ### Phase 2: Advanced Features
 - [ ] **Semantic Search:**
