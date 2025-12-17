@@ -5,23 +5,23 @@ class VectorSearch:
     def __init__(self):
         self.client = chromadb.Client()
         self.model = SentenceTransformer('all-MiniLM-L6-v2')
-        self.collection = self.client.get_or_create_collection("notes")
+        self.collection = self.client.get_or_create_collection("specs")
 
-    def index_notes(self, notes: list):
+    def index_specs(self, specs: list):
         """
-        Indexes a list of notes.
-        Each note is a dictionary with 'path' and 'content' keys.
+        Indexes a list of specs.
+        Each spec is a dictionary with 'path' and 'content' keys.
         """
-        for note in notes:
+        for spec in specs:
             self.collection.add(
-                documents=[note['content']],
-                metadatas=[{"path": note['path']}],
-                ids=[note['path']]
+                documents=[spec['content']],
+                metadatas=[{"path": spec['path']}],
+                ids=[spec['path']]
             )
 
     def search(self, query: str, n_results: int = 5) -> list:
         """
-        Searches for a query in the indexed notes.
+        Searches for a query in the indexed specs.
         """
         query_embedding = self.model.encode([query]).tolist()
         results = self.collection.query(

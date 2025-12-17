@@ -5,7 +5,7 @@ from fastmcp import FastMCP
 from .config import settings
 from .vector_search import VectorSearch
 
-mcp = FastMCP(name="MarkdownNotes")
+mcp = FastMCP(name="MarkdownSpecs")
 vector_search = VectorSearch()
 
 
@@ -17,7 +17,7 @@ def _get_safe_path(user_path: str) -> str:
         PermissionError: If the path is outside the base path.
         FileNotFoundError: If the path doesn't exist.
     """
-    base_path = os.path.realpath(settings.notes_dir)
+    base_path = os.path.realpath(settings.specs_dir)
     # Prevent user_path from being an absolute path
     if os.path.isabs(user_path):
         raise PermissionError("Error: Absolute paths are not allowed.")
@@ -26,7 +26,7 @@ def _get_safe_path(user_path: str) -> str:
 
     if not target_path.startswith(base_path):
         raise PermissionError(
-            "Error: Access to paths outside of the notes directory is not allowed.")
+            "Error: Access to paths outside of the specs directory is not allowed.")
 
     if not os.path.exists(target_path):
         raise FileNotFoundError(f"Error: Path '{user_path}' not found.")
@@ -35,10 +35,10 @@ def _get_safe_path(user_path: str) -> str:
 
 
 @mcp.tool
-def list_notes(path: str = "", recursive: bool = False, hierarchical: bool = False) -> dict:
+def list_specs(path: str = "", recursive: bool = False, hierarchical: bool = False) -> dict:
     """
-    Lists notes in a given directory relative to the base path, including their last modified timestamp.
-    The base path can be set using the 'NOTES_DIR' environment variable,
+    Lists specs in a given directory relative to the base path, including their last modified timestamp.
+    The base path can be set using the 'SPECS_DIR' environment variable,
     otherwise it defaults to the current working directory.
     """
     try:
@@ -92,10 +92,10 @@ def list_notes(path: str = "", recursive: bool = False, hierarchical: bool = Fal
 
 
 @mcp.tool
-def read_note(file_path: str) -> dict:
+def read_spec(file_path: str) -> dict:
     """
-    Reads the content and metadata of a note file relative to the base path.
-    The base path can be set using the 'NOTES_DIR' environment variable,
+    Reads the content and metadata of a spec file relative to the base path.
+    The base path can be set using the 'SPECS_DIR' environment variable,
     otherwise it defaults to the current working directory.
     """
     try:
@@ -103,16 +103,16 @@ def read_note(file_path: str) -> dict:
         if os.path.isdir(safe_path):
             return {"status": "error", "error": f"Error: '{file_path}' is a directory, not a file."}
         with open(safe_path, "r") as f:
-            note = frontmatter.load(f)
-            return {"status": "success", "data": {"content": note.content, "metadata": note.metadata}}
+            spec = frontmatter.load(f)
+            return {"status": "success", "data": {"content": spec.content, "metadata": spec.metadata}}
     except (PermissionError, FileNotFoundError) as e:
         return {"status": "error", "error": str(e)}
 
 
 @mcp.tool
-def search_notes(keyword: str, recursive: bool = False, before_context: int = 2, after_context: int = 2) -> dict:
+def search_specs(keyword: str, recursive: bool = False, before_context: int = 2, after_context: int = 2) -> dict:
     """
-    Searches for a keyword in all markdown files in the notes directory and returns
+    Searches for a keyword in all markdown files in the specs directory and returns
     matching lines with surrounding context.
     """
     results = []
@@ -158,7 +158,7 @@ def search_notes(keyword: str, recursive: bool = False, before_context: int = 2,
 
 
 @mcp.tool
-def search_in_note(file_path: str, keyword: str, before_context: int = 2, after_context: int = 2) -> dict:
+def search_in_spec(file_path: str, keyword: str, before_context: int = 2, after_context: int = 2) -> dict:
     """
     Searches for a keyword within a specific markdown file and returns
     matching lines with surrounding context.
@@ -211,14 +211,14 @@ def get_table_of_contents(file_path: str) -> dict:
 
 
 @mcp.tool
-def index_notes() -> dict:
+def index_specs() -> dict:
     """
-    Indexes all notes for semantic search.
-    This process can take a while depending on the number of notes.
+    Indexes all specs for semantic search.
+    This process can take a while depending on the number of specs.
     """
     try:
         base_path = _get_safe_path("")
-        notes_to_index = []
+        specs_to_index = []
         for root, _, files in os.walk(base_path):
             for file in files:
                 if file.endswith(".md"):
@@ -226,10 +226,10 @@ def index_notes() -> dict:
                     relative_path = os.path.relpath(full_path, base_path)
                     with open(full_path, "r", encoding="utf-8") as f:
                         content = f.read()
-                    notes_to_index.append(
+                    specs_to_index.append(
                         {"path": relative_path, "content": content})
-        vector_search.index_notes(notes_to_index)
-        return {"status": "success", "message": "Notes indexed successfully."}
+        vector_search.index_specs(specs_to_index)
+        return {"status": "success", "message": "Specs indexed successfully."}
     except Exception as e:
         return {"status": "error", "error": str(e)}
 
@@ -237,7 +237,7 @@ def index_notes() -> dict:
 @mcp.tool
 def semantic_search(query: str, n_results: int = 5) -> dict:
     """
-    Performs a semantic search over the indexed notes.
+    Performs a semantic search over the indexed specs.
     """
     try:
         results = vector_search.search(query, n_results)
@@ -249,7 +249,7 @@ def semantic_search(query: str, n_results: int = 5) -> dict:
 @mcp.tool
 def search_by_tag(tag: str) -> dict:
     """
-    Searches for notes with a specific tag in their frontmatter.
+    Searches for specs with a specific tag in their frontmatter.
     """
     results = []
     try:
@@ -261,8 +261,8 @@ def search_by_tag(tag: str) -> dict:
                     relative_path = os.path.relpath(full_path, base_path)
                     try:
                         with open(full_path, "r", encoding="utf-8") as f:
-                            note = frontmatter.load(f)
-                            if "tags" in note.metadata and tag in note.metadata["tags"]:
+                            spec = frontmatter.load(f)
+                            if "tags" in spec.metadata and tag in spec.metadata["tags"]:
                                 results.append(relative_path)
                     except Exception:
                         continue

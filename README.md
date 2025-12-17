@@ -1,8 +1,8 @@
-# Markdown Notes MCP Server
+# Markdown Specs MCP Server
 
 This project provides a simple, **read-only** MCP (Model Context Protocol) server for serving local markdown documents to an LLM. It's built using the `fastmcp` library.
 
-The server provides tools to `list_notes`, `read_note`, and `search_notes` from a local directory, but it does not support creating, editing, or deleting files. This makes it a secure way to provide a model with access to a corpus of local documents.
+The server provides tools to `list_specs`, `read_spec`, and `search_specs` from a local directory, but it does not support creating, editing, or deleting files. This makes it a secure way to provide a model with access to a corpus of local documents.
 
 ## Prerequisites
 
@@ -23,7 +23,7 @@ The server provides tools to `list_notes`, `read_note`, and `search_notes` from 
 
 The server's behavior can be customized by setting environment variables.
 
-- **`NOTES_DIR`**: Specifies the root directory for all note-related operations. If this variable is not set, the server will default to using the "notes" directory. Both the `list_notes` and `read_note` tools will resolve file and directory paths relative to this base path.
+- **`SPECS_DIR`**: Specifies the root directory for all spec-related operations. If this variable is not set, the server will default to using the "specs" directory. Both the `list_specs` and `read_spec` tools will resolve file and directory paths relative to this base path.
 
 For advanced configuration, you can modify the `src/config.py` file, but using environment variables is the recommended approach.
 
@@ -42,7 +42,7 @@ mdspec
 You should see output similar to this:
 
 ```
-[12/13/25 17:52:18] INFO     Starting MCP server 'MarkdownNotes' with transport 'http'  server.py:2582
+[12/13/25 17:52:18] INFO     Starting MCP server 'MarkdownSpecs' with transport 'http'  server.py:2582
                              on http://127.0.0.1:8080/mcp
 INFO:     Started server process [24263]
 INFO:     Waiting for application startup.
@@ -84,51 +84,51 @@ After adding the server, you can use the `/mcp` command in the Gemini CLI to see
 
 ## Tool Reference
 
-### `list_notes(path: str = "", recursive: bool = False, hierarchical: bool = False) -> dict`
+### `list_specs(path: str = "", recursive: bool = False, hierarchical: bool = False) -> dict`
 
-Lists notes in a given directory.
+Lists specs in a given directory.
 
 **Parameters:**
 
-*   `path` (optional): The path to a directory relative to `NOTES_DIR`. Defaults to the root of `NOTES_DIR`.
-*   `recursive` (optional): If `True`, lists notes in all subdirectories. Defaults to `False`.
-*   `hierarchical` (optional): If `True`, returns a tree-like structure of the notes directory. Defaults to `False`.
+*   `path` (optional): The path to a directory relative to `SPECS_DIR`. Defaults to the root of `SPECS_DIR`.
+*   `recursive` (optional): If `True`, lists specs in all subdirectories. Defaults to `False`.
+*   `hierarchical` (optional): If `True`, returns a tree-like structure of the specs directory. Defaults to `False`.
 
 **Example:**
 
 ```
-/mcp list_notes
+/mcp list_specs
 ```
 
 **Example (recursive):**
 
 ```
-/mcp list_notes recursive=True
+/mcp list_specs recursive=True
 ```
 
 **Example (hierarchical):**
 
 ```
-/mcp list_notes hierarchical=True
+/mcp list_specs hierarchical=True
 ```
 
-### `read_note(file_path: str) -> dict`
+### `read_spec(file_path: str) -> dict`
 
-Reads the content and metadata of a note.
+Reads the content and metadata of a spec.
 
 **Parameters:**
 
-*   `file_path`: The path to a note file relative to `NOTES_DIR`.
+*   `file_path`: The path to a spec file relative to `SPECS_DIR`.
 
 **Example:**
 
 ```
-/mcp read_note file_path="path/to/my/note.md"
+/mcp read_spec file_path="path/to/my/spec.md"
 ```
 
-### `search_notes(keyword: str, recursive: bool = False, before_context: int = 2, after_context: int = 2) -> dict`
+### `search_specs(keyword: str, recursive: bool = False, before_context: int = 2, after_context: int = 2) -> dict`
 
-Searches for a keyword in all notes.
+Searches for a keyword in all specs.
 
 **Parameters:**
 
@@ -140,16 +140,16 @@ Searches for a keyword in all notes.
 **Example:**
 
 ```
-/mcp search_notes keyword="python"
+/mcp search_specs keyword="python"
 ```
 
-### `search_in_note(file_path: str, keyword: str, before_context: int = 2, after_context: int = 2) -> dict`
+### `search_in_spec(file_path: str, keyword: str, before_context: int = 2, after_context: int = 2) -> dict`
 
-Searches for a keyword in a specific note.
+Searches for a keyword in a specific spec.
 
 **Parameters:**
 
-*   `file_path`: The path to a note file relative to `NOTES_DIR`.
+*   `file_path`: The path to a spec file relative to `SPECS_DIR`.
 *   `keyword`: The keyword to search for.
 *   `before_context` (optional): The number of lines to include before the matching line. Defaults to 2.
 *   `after_context` (optional): The number of lines to include after the matching line. Defaults to 2.
@@ -157,7 +157,7 @@ Searches for a keyword in a specific note.
 **Example:**
 
 ```
-/mcp search_in_note file_path="path/to/my/note.md" keyword="python"
+/mcp search_in_spec file_path="path/to/my/spec.md" keyword="python"
 ```
 
 ### `get_table_of_contents(file_path: str) -> dict`
@@ -166,27 +166,27 @@ Generates a table of contents from the markdown headings in a file.
 
 **Parameters:**
 
-*   `file_path`: The path to a note file relative to `NOTES_DIR`.
+*   `file_path`: The path to a spec file relative to `SPECS_DIR`.
 
 **Example:**
 
 ```
-/mcp get_table_of_contents file_path="path/to/my/note.md"
+/mcp get_table_of_contents file_path="path/to/my/spec.md"
 ```
 
-### `index_notes() -> dict`
+### `index_specs() -> dict`
 
-Indexes all notes for semantic search.
+Indexes all specs for semantic search.
 
 **Example:**
 
 ```
-/mcp index_notes
+/mcp index_specs
 ```
 
 ### `semantic_search(query: str, n_results: int = 5) -> dict`
 
-Performs a semantic search over the indexed notes.
+Performs a semantic search over the indexed specs.
 
 **Parameters:**
 
@@ -201,7 +201,7 @@ Performs a semantic search over the indexed notes.
 
 ### `search_by_tag(tag: str) -> dict`
 
-Searches for notes with a specific tag in their frontmatter.
+Searches for specs with a specific tag in their frontmatter.
 
 **Parameters:**
 
@@ -219,32 +219,32 @@ Here are some suggested prompts to help developers effectively use the `mdspec` 
 
 ### General Information & Discovery
 
-*   "List all notes in the 'project_docs' directory, including their last modified times."
-*   "Show me a hierarchical view of all notes in the codebase."
+*   "List all specs in the 'project_docs' directory, including their last modified times."
+*   "Show me a hierarchical view of all specs in the codebase."
 *   "What are the main topics discussed in the 'architecture_overview.md' file?"
 *   "Summarize the content of the file 'api_design.md'."
 
 ### Targeted Search & Retrieval
 
-*   "Find all notes that mention 'authentication' or 'authorization'."
+*   "Find all specs that mention 'authentication' or 'authorization'."
 *   "Search for usage of 'ChromaDB' across all documentation, and show me the surrounding context."
 *   "In the 'troubleshooting.md' file, find all mentions of 'error code 500' and show me the lines around it."
-*   "What are the notes tagged with 'feature-x'?"
-*   "Which notes are semantically similar to 'how to integrate with external services'?"
+*   "What are the specs tagged with 'feature-x'?"
+*   "Which specs are semantically similar to 'how to integrate with external services'?"
 
 ### Code Understanding & Refactoring
 
-*   "I'm looking for documentation related to our new payment gateway. Can you find relevant notes?"
+*   "I'm looking for documentation related to our new payment gateway. Can you find relevant specs?"
 *   "I need to understand how user roles are managed. What documentation exists for this?"
-*   "Find all notes that discuss 'performance optimization' and list their titles."
+*   "Find all specs that discuss 'performance optimization' and list their titles."
 
 ### Onboarding & New Features
 
 *   "Give me an overview of the 'user management' module by listing relevant documentation."
-*   "What are the best practices for writing new API endpoints? Show me relevant notes."
+*   "What are the best practices for writing new API endpoints? Show me relevant specs."
 *   "Find documentation on the new 'notification service' feature."
 
 **Tips for Effective Use:**
 
-*   **Consistent Tagging:** Encourage developers to use consistent and meaningful tags in their notes (e.g., in YAML frontmatter) to maximize the effectiveness of `search_by_tag`.
-*   **Keep Index Up-to-Date:** For semantic search to provide the most relevant results, ensure that the `index_notes` tool is run regularly after changes to the note corpus.
+*   **Consistent Tagging:** Encourage developers to use consistent and meaningful tags in their specs (e.g., in YAML frontmatter) to maximize the effectiveness of `search_by_tag`.
+*   **Keep Index Up-to-Date:** For semantic search to provide the most relevant results, ensure that the `index_specs` tool is run regularly after changes to the spec corpus.
