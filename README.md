@@ -33,10 +33,10 @@ You can run the server in two modes: `run` for production/consumption and `dev` 
 
 ### Run Mode
 
-This mode is for running the server to be used by the Gemini CLI. After installation, you can run the server using the `mdnotes` command.
+This mode is for running the server to be used by the Gemini CLI. After installation, you can run the server using the `mdspec` command.
 
 ```bash
-mdnotes
+mdspec
 ```
 
 You should see output similar to this:
@@ -77,7 +77,7 @@ Starting MCP inspector...
 To use this MCP server with the Gemini CLI, you need to add it as a source.
 
 ```bash
-gemini mcp add --transport http mdnotes http://127.0.0.1:8080/mcp
+gemini mcp add --transport http mdspec http://127.0.0.1:8080/mcp
 ```
 
 After adding the server, you can use the `/mcp` command in the Gemini CLI to see the available tools.
@@ -215,7 +215,7 @@ Searches for notes with a specific tag in their frontmatter.
 
 ## Suggested Prompts for Developers
 
-Here are some suggested prompts to help developers effectively use the `mdnotes` MCP server through the Gemini CLI or other coding agents:
+Here are some suggested prompts to help developers effectively use the `mdspec` MCP server through the Gemini CLI or other coding agents:
 
 ### General Information & Discovery
 
