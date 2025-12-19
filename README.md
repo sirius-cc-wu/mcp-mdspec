@@ -94,24 +94,6 @@ Lists specs in a given directory.
 *   `recursive` (optional): If `True`, lists specs in all subdirectories. Defaults to `False`.
 *   `hierarchical` (optional): If `True`, returns a tree-like structure of the specs directory. Defaults to `False`.
 
-**Example:**
-
-```
-/mcp list_specs
-```
-
-**Example (recursive):**
-
-```
-/mcp list_specs recursive=True
-```
-
-**Example (hierarchical):**
-
-```
-/mcp list_specs hierarchical=True
-```
-
 ### `read_spec(file_path: str) -> dict`
 
 Reads the content and metadata of a spec.
@@ -119,12 +101,6 @@ Reads the content and metadata of a spec.
 **Parameters:**
 
 *   `file_path`: The path to a spec file relative to `SPECS_DIR`.
-
-**Example:**
-
-```
-/mcp read_spec file_path="path/to/my/spec.md"
-```
 
 ### `search_specs(keyword: str, recursive: bool = False, before_context: int = 2, after_context: int = 2) -> dict`
 
@@ -137,12 +113,6 @@ Searches for a keyword in all specs.
 *   `before_context` (optional): The number of lines to include before the matching line. Defaults to 2.
 *   `after_context` (optional): The number of lines to include after the matching line. Defaults to 2.
 
-**Example:**
-
-```
-/mcp search_specs keyword="python"
-```
-
 ### `search_in_spec(file_path: str, keyword: str, before_context: int = 2, after_context: int = 2) -> dict`
 
 Searches for a keyword in a specific spec.
@@ -154,12 +124,6 @@ Searches for a keyword in a specific spec.
 *   `before_context` (optional): The number of lines to include before the matching line. Defaults to 2.
 *   `after_context` (optional): The number of lines to include after the matching line. Defaults to 2.
 
-**Example:**
-
-```
-/mcp search_in_spec file_path="path/to/my/spec.md" keyword="python"
-```
-
 ### `get_table_of_contents(file_path: str) -> dict`
 
 Generates a table of contents from the markdown headings in a file.
@@ -168,21 +132,11 @@ Generates a table of contents from the markdown headings in a file.
 
 *   `file_path`: The path to a spec file relative to `SPECS_DIR`.
 
-**Example:**
-
-```
-/mcp get_table_of_contents file_path="path/to/my/spec.md"
-```
 
 ### `index_specs() -> dict`
 
 Indexes all specs for semantic search.
 
-**Example:**
-
-```
-/mcp index_specs
-```
 
 ### `semantic_search(query: str, n_results: int = 5) -> dict`
 
@@ -193,11 +147,6 @@ Performs a semantic search over the indexed specs.
 *   `query`: The search query.
 *   `n_results` (optional): The number of results to return. Defaults to 5.
 
-**Example:**
-
-```
-/mcp semantic_search query="how to use python"
-```
 
 ### `search_by_tag(tag: str) -> dict`
 
@@ -206,12 +155,6 @@ Searches for specs with a specific tag in their frontmatter.
 **Parameters:**
 
 *   `tag`: The tag to search for.
-
-**Example:**
-
-```
-/mcp search_by_tag tag="python"
-```
 
 ## Suggested Prompts for Developers
 
