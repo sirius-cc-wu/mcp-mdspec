@@ -273,7 +273,7 @@ def search_by_tag(tag: str) -> dict:
 
 def main():
     """Runs the MCP server."""
-    mcp.run(transport="http", port=8080)
+    mcp.run(transport="stdio")
 
 
 if __name__ == "__main__":

@@ -39,16 +39,7 @@ This mode is for running the server to be used by the Gemini CLI. After installa
 mdspec
 ```
 
-You should see output similar to this:
-
-```
-[12/13/25 17:52:18] INFO     Starting MCP server 'MarkdownSpecs' with transport 'http'  server.py:2582
-                             on http://127.0.0.1:8080/mcp
-INFO:     Started server process [24263]
-INFO:     Waiting for application startup.
-INFO:     Application startup complete.
-INFO:     Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
-```
+The server will now run using `stdio` as the transport mechanism.
 
 ### Dev Mode
 
@@ -74,10 +65,10 @@ Starting MCP inspector...
 
 ## Connecting to Gemini CLI
 
-To use this MCP server with the Gemini CLI, you need to add it as a source.
+To use this MCP server with the Gemini CLI, you need to add it as a source. Since the server now uses `stdio`, you can add it with the following command:
 
 ```bash
-gemini mcp add --transport http mdspec http://127.0.0.1:8080/mcp
+gemini mcp add --transport stdio mdspec mdspec
 ```
 
 After adding the server, you can use the `/mcp` command in the Gemini CLI to see the available tools.
