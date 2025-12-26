@@ -297,7 +297,7 @@ Follow these steps precisely. If any step fails, report the failure to the user 
     *   **Verification:** Confirm the tool returns a success status.
 
 2.  **Search for Specification:**
-    *   **Action:** Call the `semantic_search(query='{keyword}', n_results=1)` tool.
+    *   **Action:** Call the `semantic_search(query='{keyword}', n_results=5)` tool.
     *   **Purpose:** To find the single most relevant specification document for the keyword.
     *   **Verification:** Check the tool's output. If the `metadatas` field is empty or does not contain a `path`, it means no relevant document was found. In this case, inform the user that no specification was found for '{keyword}' and stop.
 
