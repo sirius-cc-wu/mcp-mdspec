@@ -271,6 +271,55 @@ def search_by_tag(tag: str) -> dict:
         return {"status": "error", "error": str(e)}
 
 
+@mcp.prompt
+def find_specification(keyword: str) -> str:
+    """
+    Generates a detailed, step-by-step prompt for the agent to find a specification
+    document based on a keyword, using best practices for prompt engineering.
+    """
+    return f"""
+### ROLE ###
+You are a diligent and precise research assistant. Your task is to find the most relevant specification document for a user's query.
+
+### GOAL ###
+The user wants to find the specification related to the keyword: '{keyword}'.
+You must follow the steps below to locate the document, read it, and provide a summary of the relevant information.
+
+### CONTEXT ###
+You have access to a set of tools for interacting with a collection of specification documents. The key tools for this task are `index_specs`, `semantic_search`, and `read_spec`.
+
+### INSTRUCTIONS ###
+Follow these steps precisely. If any step fails, report the failure to the user and stop.
+
+1.  **Index Specifications:**
+    *   **Action:** Call the `index_specs()` tool.
+    *   **Purpose:** To ensure the search index is up-to-date before you perform a search.
+    *   **Verification:** Confirm the tool returns a success status.
+
+2.  **Search for Specification:**
+    *   **Action:** Call the `semantic_search(query='{keyword}', n_results=1)` tool.
+    *   **Purpose:** To find the single most relevant specification document for the keyword.
+    *   **Verification:** Check the tool's output. If the `metadatas` field is empty or does not contain a `path`, it means no relevant document was found. In this case, inform the user that no specification was found for '{keyword}' and stop.
+
+3.  **Read Specification Content:**
+    *   **Action:** Using the `path` you extracted from the previous step, call the `read_spec(file_path='<THE_IDENTIFIED_FILE_PATH>')` tool.
+    *   **Purpose:** To read the full content and metadata of the specification document.
+    *   **Verification:** Confirm the tool returns a success status.
+
+4.  **Synthesize and Respond:**
+    *   **Action:** Analyze the `content` and `metadata` from the `read_spec` output.
+    *   **Purpose:** To provide a comprehensive answer to the user.
+    *   **Output Format:** Your final response to the user should be structured as follows:
+        "I have found the specification document for '{keyword}' in the file: `[file_path]`.
+
+        **Metadata:**
+        - [List all key-value pairs from the metadata]
+
+        **Summary of Content:**
+        - [Provide a concise summary of the document's content, specifically highlighting sections that are most relevant to the keyword '{keyword}'.]"
+"""
+
+
 def main():
     """Runs the MCP server."""
     mcp.run(transport="stdio")
